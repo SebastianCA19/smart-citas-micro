@@ -1,0 +1,86 @@
+# ============================
+# 📦 CONFIGURACIÓN GENERAL
+# ============================
+
+# Ignorar archivos y carpetas del sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar IDEs
+.idea/
+.vscode/
+*.iml
+
+# Ignorar compilados y builds
+target/
+bin/
+out/
+build/
+
+# Ignorar logs
+*.log
+*.log.*
+
+# Ignorar archivos temporales
+*.tmp
+*.swp
+*.bak
+*.old
+
+# Ignorar archivos de configuración del sistema operativo
+ehthumbs.db
+desktop.ini
+
+# ============================
+# 🧱 ESPECÍFICO PARA MAVEN
+# ============================
+.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties
+
+# ============================
+# 🧰 CONFIGURACIONES PERSONALIZADAS
+# ============================
+
+# Ignorar carpetas tomcat.* (como tomcat.8081, tomcat.9090, etc.)
+tomcat.*/
+
+# Ignorar todos los archivos .env sin importar su ubicación
+**/.env
+
+# Ignorar otros archivos de entorno opcionales
+**/.env.*
+**/.env_*
+
+# ============================
+# ⚙️ CONFIGURACIONES ADICIONALES (opcional)
+# ============================
+
+# Ignorar archivos de configuración de IntelliJ, NetBeans, Eclipse, etc.
+*.classpath
+*.project
+*.settings/
+.nb-gradle/
+.nb-gradle-properties
+
+# Ignorar artefactos de empaquetado
+*.war
+*.ear
+*.jar
+
+# ============================
+# 🧪 TESTS Y REPORTES
+# ============================
+
+# Ignorar reportes de pruebas y cobertura
+test-output/
+surefire-reports/
+jacoco.exec
+
+# ============================
+# 🧍‍♂️ PERSONAL (opcional)
+# ============================
+
+# Ignorar archivos personales o de ejemplo
+*.example
+*.sample
+
