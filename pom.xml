@@ -11,5 +11,7 @@
 
     <modules>
         <module>users-service</module>
+        <module>medical-records-service</module>
+        <module>medical-records-service</module>
     </modules>
 </project>
