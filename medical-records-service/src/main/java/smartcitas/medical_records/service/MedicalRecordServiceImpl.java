@@ -1,13 +1,12 @@
 package smartcitas.medical_records.service;
 
+import estructura.ListaEsp;
 import smartcitas.medical_records.dto.CreateMedicalRecordDTO;
 import smartcitas.medical_records.dto.ResponseMedicalRecordDTO;
 import smartcitas.medical_records.repository.dao.MedicalRecordDao;
 import smartcitas.medical_records.repository.dao.MedicalRecordDaoPostgres;
 import smartcitas.medical_records.repository.model.MedicalRecord;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class MedicalRecordServiceImpl implements MedicalRecordService {
     private final MedicalRecordDao dao = new MedicalRecordDaoPostgres();
@@ -39,19 +38,19 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     }
 
     @Override
-    public List<ResponseMedicalRecordDTO> getAll() {
-        List<MedicalRecord> medicalRecords = dao.findAll();
-        List<ResponseMedicalRecordDTO> responseMedicalRecordDTOList = new ArrayList<>();
-        for (MedicalRecord medicalRecord : medicalRecords) {
+    public ListaEsp<ResponseMedicalRecordDTO> getAll() {
+        ListaEsp<MedicalRecord> medicalRecords = dao.findAll();
+        ListaEsp<ResponseMedicalRecordDTO> responseMedicalRecordDTOList = new ListaEsp<>();
+        for (int i = 0; i < medicalRecords.numElementos(); i++) {
             ResponseMedicalRecordDTO responseDTO = new ResponseMedicalRecordDTO(
-                    medicalRecord.getIdRecord(),
-                    medicalRecord.getIdPatient(),
-                    medicalRecord.getIdDoctor(),
-                    medicalRecord.getDiagnosis(),
-                    medicalRecord.getTreatment(),
-                    medicalRecord.getNotes()
+                    medicalRecords.obtener(i).getIdRecord(),
+                    medicalRecords.obtener(i).getIdPatient(),
+                    medicalRecords.obtener(i).getIdDoctor(),
+                    medicalRecords.obtener(i).getDiagnosis(),
+                    medicalRecords.obtener(i).getTreatment(),
+                    medicalRecords.obtener(i).getNotes()
             );
-            responseMedicalRecordDTOList.add(responseDTO);
+            responseMedicalRecordDTOList.agregar(responseDTO);
         }
         return responseMedicalRecordDTOList;
     }

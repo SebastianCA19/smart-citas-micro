@@ -1,17 +1,17 @@
 package smartcitas.medical_records.service;
 
+import estructura.ListaEsp;
 import smartcitas.medical_records.dto.CreateMedicalRecordDTO;
 import smartcitas.medical_records.dto.ResponseMedicalRecordDTO;
 
 
-import java.util.List;
 
 public interface MedicalRecordService {
     int create(CreateMedicalRecordDTO createMedicalRecordDTO);
 
     int update(int idRecord, CreateMedicalRecordDTO createMedicalRecordDTO);
 
-    List<ResponseMedicalRecordDTO> getAll();
+    ListaEsp<ResponseMedicalRecordDTO> getAll();
 
     ResponseMedicalRecordDTO getById(int idRecord);
 

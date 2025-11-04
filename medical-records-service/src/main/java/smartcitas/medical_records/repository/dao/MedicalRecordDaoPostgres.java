@@ -1,11 +1,9 @@
 package smartcitas.medical_records.repository.dao;
 
+import estructura.ListaEsp;
 import smartcitas.medical_records.repository.model.MedicalRecord;
 import smartcitas.medical_records.utils.DBConnection;
-
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
@@ -81,8 +79,8 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     }
 
     @Override
-    public List<MedicalRecord> findAll() {
-        List<MedicalRecord> medicalRecords = new ArrayList<>();
+    public ListaEsp<MedicalRecord> findAll() {
+        ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
         String sql = "SELECT * FROM historias_clinica";
 
         try(Connection connection = DBConnection.getInstance().getConnection();
@@ -90,7 +88,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
             ResultSet resultSet = preparedStatement.executeQuery()){
                 while(resultSet.next()){
                     MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
-                    medicalRecords.add(medicalRecord);
+                    medicalRecords.agregar(medicalRecord);
                 }
         } catch (SQLException e) {
             throw new RuntimeException(e);
