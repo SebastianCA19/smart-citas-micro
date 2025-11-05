@@ -3,8 +3,10 @@ package smartcitas.users.controller;
 import com.google.gson.Gson;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
+import smartcitas.users.controller.dto.UserDTORecord;
 import smartcitas.users.controller.dto.UserDto;
 import smartcitas.users.model.User;
+import smartcitas.users.model.dao.DAOFactory;
 import smartcitas.users.model.dao.UserDao;
 import smartcitas.users.model.dao.UserDaoPostgres;
 
@@ -18,7 +20,8 @@ import java.util.Map;
 public class UserController extends HttpServlet {
 
     private final Gson gson = new Gson();
-    private final UserDao userDao = new UserDaoPostgres();
+    private final DAOFactory fac = DAOFactory.getFactory();
+    private final UserDao userDao = fac.getUserDao("postgres");
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -55,7 +58,7 @@ public class UserController extends HttpServlet {
             User user = userDao.login(email, password);
 
             if (user != null) {
-                UserDto userDto = new UserDto(
+                UserDTORecord userDto = new UserDTORecord(
                         user.getIdUsuario(), user.getNombre(), user.getPrimerApellido(), user.getSegundoApellido(), user.getEmail(), user.getEstado());
 
                 resp.getWriter().println(gson.toJson(userDto));

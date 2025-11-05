@@ -5,11 +5,12 @@ import java.io.*;
 import java.util.*;
 import com.google.gson.Gson;
 import smartcitas.users.model.User;
+import smartcitas.users.model.dao.DAOFactory;
 import smartcitas.users.model.dao.UserDao;
-import smartcitas.users.model.dao.UserDaoPostgres;
 
 public abstract class BaseTypeController extends HttpServlet {
-    protected final UserDao userDao = new UserDaoPostgres();
+    protected final DAOFactory fac =  DAOFactory.getFactory();
+    protected final UserDao userDao = fac.getUserDao("postgres");
     protected final Gson gson = new Gson();
 
     // Cada subclase define su tabla (pacientes, medicos, etc.)
