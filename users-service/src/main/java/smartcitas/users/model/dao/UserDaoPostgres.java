@@ -89,7 +89,7 @@ public class UserDaoPostgres implements UserDao {
             ps.setString(4, user.getEmail());
             ps.setString(5, user.getClave());
             ps.setInt(6, user.getEstado());
-            ps.setInt(7, user.getIdUsuario());
+            ps.setInt(7, user.getCedula());
 
             return ps.executeUpdate() > 0;
         } catch(SQLException e){
@@ -168,7 +168,7 @@ public class UserDaoPostgres implements UserDao {
 
     private User mapUser(ResultSet rs) throws SQLException {
         User u = new User();
-        u.setIdUsuario(rs.getInt("id_usuario"));
+        u.setCedula(rs.getInt("id_usuario"));
         u.setNombre(rs.getString("nombre"));
         u.setPrimerApellido(rs.getString("primer_apellido"));
         u.setSegundoApellido(rs.getString("segundo_apellido"));

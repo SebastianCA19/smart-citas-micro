@@ -1,7 +1,7 @@
 package smartcitas.users.model;
 
 public class User {
-    private int idUsuario;
+    private int cedula;
     private String nombre;
     private String primerApellido;
     private String segundoApellido;
@@ -9,12 +9,12 @@ public class User {
     private String clave;
     private int estado;
 
-    public int getIdUsuario() {
-        return idUsuario;
+    public int getCedula() {
+        return cedula;
     }
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setCedula(int cedula) {
+        this.cedula = cedula;
     }
 
     public String getNombre() {

@@ -12,7 +12,7 @@ import java.util.List;
 
 import smartcitas.users.utils.DBConnectionMongo;
 
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 public class UserDaoMongo implements UserDao{
 
@@ -34,10 +34,13 @@ public class UserDaoMongo implements UserDao{
 
     @Override
     public User findById(int id) {
-
-        Document tempUser = (Document) users.find(eq("idUsuario", id));
-
-        return mapDocToUser(tempUser);
+        Document tempUser = users.find(eq("cedula", id)).first();
+        if (tempUser != null){
+            return mapDocToUser(tempUser);
+        }
+        else{
+            return null;
+        }
     }
 
     @Override
@@ -48,19 +51,25 @@ public class UserDaoMongo implements UserDao{
 
     @Override
     public boolean update(User user) {
-        UpdateResult out = users.updateOne(eq("idUsuario", user.getIdUsuario()), mapUserToDoc(user));
+        Document tempDoc = mapUserToDoc(user);
+        UpdateResult out = users.updateOne(eq("cedula", user.getCedula()), new Document("$set", tempDoc));
 
-        return out.wasAcknowledged(); //not sure this works tbh
+        return out.getModifiedCount() > 0;
     }
 
     @Override
     public boolean delete(int id) {
-        DeleteResult out = users.deleteOne(eq("idUsuario", id));
-        return out.wasAcknowledged();
+        DeleteResult out = users.deleteOne(eq("cedula", id));
+        return out.getDeletedCount() > 0;
     }
 
     @Override
     public User login(String email, String password) {
+
+        Document log = users.find(and(eq("email", email), eq("clave", password))).first();
+        if(log != null){
+            return mapDocToUser(log);
+        }
         return null;
     }
 
@@ -78,15 +87,15 @@ public class UserDaoMongo implements UserDao{
 
     @Override
     public void linkUserToType(int userId, String tableName) {
-
+       users.updateOne(eq("cedula", userId), new Document("$set", new Document("type", tableName)));
     }
 
     public User mapDocToUser(Document doc){
         User userOut = new User();
-        userOut.setIdUsuario(doc.getInteger("idUsuario"));
+        userOut.setCedula(doc.getInteger("cedula"));
         userOut.setNombre(doc.getString("nombre"));
         userOut.setPrimerApellido(doc.getString("primerApellido"));
-        userOut.setPrimerApellido(doc.getString("segundoApellido"));
+        userOut.setSegundoApellido(doc.getString("segundoApellido"));
         userOut.setEmail(doc.getString("email"));
         userOut.setClave(doc.getString("clave"));
         userOut.setEstado(doc.getInteger("estado"));
@@ -94,7 +103,8 @@ public class UserDaoMongo implements UserDao{
     }
 
     public Document mapUserToDoc(User user){
-        return new Document("nombre", user.getNombre())
+        return new Document("cedula", user.getCedula())
+                .append("nombre", user.getNombre())
                 .append("primerApellido", user.getPrimerApellido())
                 .append("segundoApellido", user.getSegundoApellido())
                 .append("email", user.getEmail())

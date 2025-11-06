@@ -4,11 +4,9 @@ import com.google.gson.Gson;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
 import smartcitas.users.controller.dto.UserDTORecord;
-import smartcitas.users.controller.dto.UserDto;
 import smartcitas.users.model.User;
 import smartcitas.users.model.dao.DAOFactory;
 import smartcitas.users.model.dao.UserDao;
-import smartcitas.users.model.dao.UserDaoPostgres;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,7 +57,7 @@ public class UserController extends HttpServlet {
 
             if (user != null) {
                 UserDTORecord userDto = new UserDTORecord(
-                        user.getIdUsuario(), user.getNombre(), user.getPrimerApellido(), user.getSegundoApellido(), user.getEmail(), user.getEstado());
+                        user.getCedula(), user.getNombre(), user.getPrimerApellido(), user.getSegundoApellido(), user.getEmail(), user.getEstado());
 
                 resp.getWriter().println(gson.toJson(userDto));
             } else {
@@ -92,7 +90,7 @@ public class UserController extends HttpServlet {
 
         int id = Integer.parseInt(path.substring(1));
         User user = gson.fromJson(new BufferedReader(new InputStreamReader(req.getInputStream())), User.class);
-        user.setIdUsuario(id);
+        user.setCedula(id);
 
         if(userDao.update(user)){
             resp.getWriter().println("{\"message\":\"Usuario actualizado correctamente\"}");
