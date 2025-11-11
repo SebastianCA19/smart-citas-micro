@@ -1,6 +1,7 @@
 package smartcitas.medical_records.controller;
 
 import com.google.gson.Gson;
+import estructura.ListaEsp;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class MedicalRecordController extends HttpServlet {
         String path = req.getPathInfo();
 
         if (path == null || path.equals("/")) {
-            List<ResponseMedicalRecordDTO> medicalRecords = medicalRecordService.getAll();
+            ListaEsp<ResponseMedicalRecordDTO> medicalRecords = medicalRecordService.getAll();
             resp.getWriter().println(gson.toJson(medicalRecords));
         } else {
             int id = Integer.parseInt(path.substring(1));

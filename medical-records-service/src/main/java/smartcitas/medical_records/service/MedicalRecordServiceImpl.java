@@ -21,7 +21,6 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
         return dao.insert(medicalRecord);
     }
-
     @Override
     public int update(int idRecord, CreateMedicalRecordDTO createMedicalRecordDTO) {
         MedicalRecord foundRecord = dao.findById(idRecord);
