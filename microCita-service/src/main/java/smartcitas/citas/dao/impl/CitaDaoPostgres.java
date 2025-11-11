@@ -38,12 +38,12 @@ public class CitaDaoPostgres implements CitaDao {
             java.util.Properties props = new java.util.Properties();
             props.load(inputStream);
 
-            this.URL = props.getProperty("URL");
+            this.URL = props.getProperty("DATABASE_URL");
             this.USER = props.getProperty("USER");
             this.PASSWORD = props.getProperty("PASSWORD");
 
             if (URL == null || USER == null || PASSWORD == null) {
-                throw new RuntimeException("Missing required database configuration in .env file");
+                throw new RuntimeException("Missing required database configuration in .env file. Required: DATABASE_URL, USER, PASSWORD");
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to load database configuration", e);
