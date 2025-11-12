@@ -16,10 +16,10 @@ public class UserDaoPostgres implements UserDao {
         try(Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();){
-                while(resultSet.next()){
-                    User user = mapUser(resultSet);
-                    users.add(user);
-                }
+            while(resultSet.next()){
+                User user = mapUser(resultSet);
+                users.add(user);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -29,8 +29,9 @@ public class UserDaoPostgres implements UserDao {
 
     @Override
     public User findById(int id) {
-        String sql = "select * from usuarios where id_usuario = ?";
-        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        String sql = "select * from usuarios where cedula = ?";
+        try(Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setInt(1, id);
 
@@ -48,30 +49,26 @@ public class UserDaoPostgres implements UserDao {
 
     @Override
     public int insert(User user) {
-        String sql = "INSERT INTO usuarios (nombre, primer_apellido, segundo_apellido, email, clave, estado) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (cedula, nombre, primer_apellido, segundo_apellido, email, clave, estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        int id = 0;
+        try(Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql)) {
 
-        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, user.getNombre());
-            ps.setString(2, user.getPrimerApellido());
-            ps.setString(3, user.getSegundoApellido());
-            ps.setString(4, user.getEmail());
-            ps.setString(5, user.getClave());
-            ps.setInt(6, user.getEstado());
+            ps.setInt(1, user.getCedula());
+            ps.setString(2, user.getNombre());
+            ps.setString(3, user.getPrimerApellido());
+            ps.setString(4, user.getSegundoApellido());
+            ps.setString(5, user.getEmail());
+            ps.setString(6, user.getClave());
+            ps.setInt(7, user.getEstado());
 
             int rows = ps.executeUpdate();
 
             if (rows > 0) {
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        id = rs.getInt(1);
-                    }
-                }
+                return user.getCedula(); // Return the cedula that was inserted
             }
 
-            return id;
+            return 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -79,7 +76,7 @@ public class UserDaoPostgres implements UserDao {
 
     @Override
     public boolean update(User user) {
-        String sql = "UPDATE usuarios SET nombre=?, primer_apellido=?, segundo_apellido=?, email=?, clave=?, estado=? WHERE id_usuario=?";
+        String sql = "UPDATE usuarios SET nombre=?, primer_apellido=?, segundo_apellido=?, email=?, clave=?, estado=? WHERE cedula=?";
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -99,9 +96,10 @@ public class UserDaoPostgres implements UserDao {
 
     @Override
     public boolean delete(int id) {
-        String sql = "UPDATE usuarios SET estado=0 WHERE id_usuario=?";
+        String sql = "UPDATE usuarios SET estado=0 WHERE cedula=?";
 
-        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement ps = connection.prepareStatement(sql)){
+        try(Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql)){
 
             ps.setInt(1, id);
 
@@ -116,7 +114,8 @@ public class UserDaoPostgres implements UserDao {
     public User login(String email, String password) {
         String sql  = "SELECT * FROM usuarios WHERE email=? AND clave=?";
 
-        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement ps = connection.prepareStatement(sql)){
+        try(Connection connection = DBConnection.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(sql)){
 
             ps.setString(1, email);
             ps.setString(2, password);
@@ -136,7 +135,7 @@ public class UserDaoPostgres implements UserDao {
     public List<User> getUsersByType(String tableName) {
         List<User> list = new ArrayList<>();
         String sql = "SELECT u.* FROM usuarios u " +
-                "INNER JOIN " + tableName + " t ON u.id_usuario = t.id_usuario";
+                "INNER JOIN " + tableName + " t ON u.cedula = t.cedula";
 
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -156,7 +155,7 @@ public class UserDaoPostgres implements UserDao {
 
     @Override
     public void linkUserToType(int userId, String tableName) {
-        String sql = "INSERT INTO " + tableName + " (id_usuario) VALUES (?)";
+        String sql = "INSERT INTO " + tableName + " (cedula) VALUES (?)";
         try (Connection conn = DBConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
@@ -168,7 +167,7 @@ public class UserDaoPostgres implements UserDao {
 
     private User mapUser(ResultSet rs) throws SQLException {
         User u = new User();
-        u.setCedula(rs.getInt("id_usuario"));
+        u.setCedula(rs.getInt("cedula"));
         u.setNombre(rs.getString("nombre"));
         u.setPrimerApellido(rs.getString("primer_apellido"));
         u.setSegundoApellido(rs.getString("segundo_apellido"));

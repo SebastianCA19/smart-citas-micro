@@ -26,11 +26,17 @@ public abstract class BaseTypeController extends HttpServlet {
             resp.getWriter().write(gson.toJson(users));
         } else {
             try {
-                int id = Integer.parseInt(path.substring(1));
-                User user = userDao.findById(id);
-                resp.getWriter().write(gson.toJson(user));
+                int cedula = Integer.parseInt(path.substring(1));
+                User user = userDao.findById(cedula);
+
+                if (user != null) {
+                    resp.getWriter().write(gson.toJson(user));
+                } else {
+                    resp.setStatus(404);
+                    resp.getWriter().write("{\"error\":\"Usuario no encontrado\"}");
+                }
             } catch (Exception e) {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID inválido");
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cédula inválida");
             }
         }
     }
@@ -40,35 +46,67 @@ public abstract class BaseTypeController extends HttpServlet {
         BufferedReader reader = req.getReader();
         User user = gson.fromJson(reader, User.class);
 
-        int id = userDao.insert(user);
-        if (id > 0) {
-            userDao.linkUserToType(id, getTableName());
+        // Validate that cedula is provided
+        if (user.getCedula() == 0) {
+            resp.setStatus(400);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"error\":\"La cédula es requerida\"}");
+            return;
         }
 
-        resp.setContentType("application/json");
-        resp.getWriter().write("{\"created\": " + id + "}");
+        int cedula = userDao.insert(user);
+        if (cedula > 0) {
+            userDao.linkUserToType(cedula, getTableName());
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"message\":\"Usuario creado exitosamente\", \"cedula\": " + cedula + "}");
+        } else {
+            resp.setStatus(400);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"error\":\"Error al crear usuario. La cédula podría estar duplicada\"}");
+        }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String path = req.getPathInfo();
+
+        if (path == null || path.equals("/")) {
+            resp.setStatus(400);
+            resp.setContentType("application/json");
+            resp.getWriter().write("{\"error\":\"Debe especificar la cédula del usuario\"}");
+            return;
+        }
+
+        int cedula = Integer.parseInt(path.substring(1));
         BufferedReader reader = req.getReader();
         User user = gson.fromJson(reader, User.class);
+        user.setCedula(cedula);
 
         boolean ok = userDao.update(user);
         resp.setContentType("application/json");
-        resp.getWriter().write("{\"updated\": " + ok + "}");
+        if (ok) {
+            resp.getWriter().write("{\"message\":\"Usuario actualizado correctamente\"}");
+        } else {
+            resp.setStatus(400);
+            resp.getWriter().write("{\"error\":\"Error al actualizar usuario\"}");
+        }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String path = req.getPathInfo();
         if (path != null && path.length() > 1) {
-            int id = Integer.parseInt(path.substring(1));
-            boolean ok = userDao.delete(id);
-            resp.getWriter().write("{\"deleted\": " + ok + "}");
+            int cedula = Integer.parseInt(path.substring(1));
+            boolean ok = userDao.delete(cedula);
+            resp.setContentType("application/json");
+            if (ok) {
+                resp.getWriter().write("{\"message\":\"Usuario eliminado correctamente\"}");
+            } else {
+                resp.setStatus(404);
+                resp.getWriter().write("{\"error\":\"Usuario no encontrado\"}");
+            }
         } else {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Debe indicar ID");
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Debe indicar cédula");
         }
     }
 }
-

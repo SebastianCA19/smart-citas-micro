@@ -30,8 +30,8 @@ public class UserController extends HttpServlet {
             List<User> users = userDao.getAll();
             resp.getWriter().println(gson.toJson(users));
         }else{
-            int id =  Integer.parseInt(path.substring(1));
-            User user = userDao.findById(id);
+            int cedula = Integer.parseInt(path.substring(1));
+            User user = userDao.findById(cedula);
 
             if(user != null){
                 resp.getWriter().println(gson.toJson(user));
@@ -68,12 +68,22 @@ public class UserController extends HttpServlet {
         }
 
         User user = gson.fromJson(new BufferedReader(new InputStreamReader(req.getInputStream())), User.class);
+
+        // Validate that cedula is provided
+        if (user.getCedula() == 0) {
+            resp.setStatus(400);
+            resp.getWriter().println("{\"error\":\"La cédula es requerida\"}");
+            return;
+        }
+
         user.setEstado(1);
 
-        if(userDao.insert(user) > 0){
-            resp.getWriter().println("{\"message\":\"Usuario registrado exitosamente\"}");
+        int cedula = userDao.insert(user);
+        if(cedula > 0){
+            resp.getWriter().println("{\"message\":\"Usuario registrado exitosamente\", \"cedula\":" + cedula + "}");
         }else{
             resp.setStatus(400);
+            resp.getWriter().println("{\"error\":\"Error al registrar usuario. La cédula podría estar duplicada\"}");
         }
     }
 
@@ -84,18 +94,19 @@ public class UserController extends HttpServlet {
 
         if (path == null || path.equals("/")){
             resp.setStatus(404);
-            resp.getWriter().println("{\"error\":\"Debe especificar el id del usuario\"}");
+            resp.getWriter().println("{\"error\":\"Debe especificar la cédula del usuario\"}");
             return;
         }
 
-        int id = Integer.parseInt(path.substring(1));
+        int cedula = Integer.parseInt(path.substring(1));
         User user = gson.fromJson(new BufferedReader(new InputStreamReader(req.getInputStream())), User.class);
-        user.setCedula(id);
+        user.setCedula(cedula);
 
         if(userDao.update(user)){
             resp.getWriter().println("{\"message\":\"Usuario actualizado correctamente\"}");
         }else{
             resp.setStatus(400);
+            resp.getWriter().println("{\"error\":\"Error al actualizar usuario\"}");
         }
     }
 
@@ -104,9 +115,9 @@ public class UserController extends HttpServlet {
         resp.setContentType("application/json");
         String path = req.getPathInfo();
 
-        int id = Integer.parseInt(path.substring(1));
+        int cedula = Integer.parseInt(path.substring(1));
 
-        if(userDao.delete(id)){
+        if(userDao.delete(cedula)){
             resp.getWriter().println("{\"message\":\"Usuario eliminado correctamente\"}");
         }else{
             resp.setStatus(404);
@@ -114,4 +125,3 @@ public class UserController extends HttpServlet {
         }
     }
 }
-
