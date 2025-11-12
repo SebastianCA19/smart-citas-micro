@@ -13,7 +13,6 @@ public abstract class BaseTypeController extends HttpServlet {
     protected final UserDao userDao = fac.getUserDao("postgres");
     protected final Gson gson = new Gson();
 
-    // Cada subclase define su tabla (pacientes, medicos, etc.)
     protected abstract String getTableName();
 
     @Override

@@ -10,5 +10,6 @@ public interface MedicalRecordDao {
     int update(MedicalRecord medicalRecord);
     MedicalRecord findById(int idRecord);
     ListaEsp<MedicalRecord> findAll();
-
+    ListaEsp<MedicalRecord> findByDoctorId(int idDoctor);
+    ListaEsp<MedicalRecord> findByPatientId(int idPatient);
 }

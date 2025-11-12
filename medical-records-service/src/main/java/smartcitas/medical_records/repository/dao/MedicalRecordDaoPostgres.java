@@ -8,7 +8,7 @@ import java.sql.*;
 public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
     public int insert(MedicalRecord medicalRecord) {
-        String sql = "INSERT INTO medical_records (id_patient, id_doctor, diagnosis, treatment, notes) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO historias_clinicas (id_paciente, id_doctor, diagnostico, tratamiento, notas) VALUES (?, ?, ?, ?, ?)";
 
         int id = 0;
 
@@ -39,7 +39,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
 
     @Override
     public int update(MedicalRecord medicalRecord) {
-        String sql = "UPDATE historias_clinica SET id_patient=?, id_doctor=?, diagnosis=?, treatment=?, notes=? WHERE id_record=?";
+        String sql = "UPDATE historias_clinicas SET id_paciente=?, id_doctor=?, diagnostico=?, tratamiento=?, notas=? WHERE id_historia=?";
 
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -59,7 +59,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
 
     @Override
     public MedicalRecord findById(int idRecord) {
-        String sql = "SELECT * FROM historias_clinica WHERE id_record = ?";
+        String sql = "SELECT * FROM historias_clinicas WHERE id_historia = ?";
 
         try(Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -81,7 +81,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
     public ListaEsp<MedicalRecord> findAll() {
         ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
-        String sql = "SELECT * FROM historias_clinica";
+        String sql = "SELECT * FROM historias_clinicas";
 
         try(Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -90,6 +90,40 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
                     MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
                     medicalRecords.agregar(medicalRecord);
                 }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return medicalRecords;
+    }
+
+    @Override
+    public ListaEsp<MedicalRecord> findByDoctorId(int idDoctor) {
+        ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
+        String sql = "SELECT * FROM historias_clinicas WHERE id_doctor = ?";
+
+        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql); ResultSet resultSet = preparedStatement.executeQuery()){
+            while(resultSet.next()){
+                MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
+                medicalRecords.agregar(medicalRecord);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return medicalRecords;
+    }
+
+    @Override
+    public ListaEsp<MedicalRecord> findByPatientId(int idPatient) {
+        ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
+        String sql = "SELECT * FROM historias_clinicas WHERE id_paciente = ?";
+
+        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql); ResultSet resultSet = preparedStatement.executeQuery()){
+            while(resultSet.next()){
+                MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
+                medicalRecords.agregar(medicalRecord);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
