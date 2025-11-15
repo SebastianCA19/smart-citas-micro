@@ -60,7 +60,7 @@ public class UserDaoPostgres implements UserDao {
             ps.setString(4, user.getSegundoApellido());
             ps.setString(5, user.getEmail());
             ps.setString(6, user.getClave());
-            ps.setInt(7, user.getEstado());
+            ps.setInt(7, 1);
 
             int rows = ps.executeUpdate();
 
@@ -112,7 +112,7 @@ public class UserDaoPostgres implements UserDao {
 
     @Override
     public User login(String email, String password) {
-        String sql  = "SELECT * FROM usuarios WHERE email=? AND clave=?";
+        String sql  = "SELECT * FROM usuarios WHERE email=? AND clave=? AND estado = 1";
 
         try(Connection connection = DBConnection.getInstance().getConnection();
             PreparedStatement ps = connection.prepareStatement(sql)){
