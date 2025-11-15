@@ -100,7 +100,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
     public ListaEsp<MedicalRecord> findByDoctorId(int idDoctor) {
         ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
-        String sql = "SELECT * FROM historias_clinicas WHERE id_doctor = ?";
+        String sql = "SELECT * FROM historias_clinicas WHERE id_doctor = ? ORDER BY id_historia DESC";
 
         try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql); ResultSet resultSet = preparedStatement.executeQuery()){
             while(resultSet.next()){
@@ -117,7 +117,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
     public ListaEsp<MedicalRecord> findByPatientId(int idPatient) {
         ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
-        String sql = "SELECT * FROM historias_clinicas WHERE id_paciente = ?";
+        String sql = "SELECT * FROM historias_clinicas WHERE id_paciente = ? ORDER BY id_historia DESC";
 
         try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql); ResultSet resultSet = preparedStatement.executeQuery()){
             while(resultSet.next()){
