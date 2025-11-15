@@ -25,7 +25,7 @@ public class AppointmentServiceApplication{
 
         Tomcat.addServlet(context, "appointmentService", new AppointmentController());
 
-        context.addServletMappingDecoded("/api/appointment/*", "appointment");
+        context.addServletMappingDecoded("/api/appointment/*", "appointmentService");
 
         tomcat.start();
         tomcat.getServer().await();

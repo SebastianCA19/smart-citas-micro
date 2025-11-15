@@ -55,6 +55,10 @@ public class AppointmentController extends HttpServlet {
             String patientIdStr = path.substring(path.indexOf("/patient/") + 9, path.indexOf("/details"));
             int patientId = Integer.parseInt(patientIdStr);
             ListaEsp<AppointmentWithDetailsDto> appointments = appointmentService.getAppointmentsWithDetailsByPatientId(patientId);
+            if(appointments.estaVacia()){
+                resp.setStatus(404);
+                resp.getWriter().println("{\"error\":\"Paciente sin citas\"}");
+            }
             resp.getWriter().println(gson.toJson(appointments));
         }
         // GET /api/appointment/{id}/details - Get appointment by ID with details
