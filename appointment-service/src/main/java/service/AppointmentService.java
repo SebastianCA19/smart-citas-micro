@@ -160,6 +160,38 @@ public class AppointmentService {
         return detailedAppointments;
     }
 
+    public ListaEsp<AppointmentWithDetailsDto> getAppointmentsWithDetailsByDoctorId(int doctorId) {
+        AppointmentDaoPostgres dao = (AppointmentDaoPostgres) appointmentFactoryDao.getDao("postgres");
+        ListaEsp<Appointment> appointments = dao.getByDoctorId(doctorId);
+        ListaEsp<AppointmentWithDetailsDto> detailedAppointments = new ListaEsp<>();
+
+        for (int i = 0; i < appointments.numElementos(); i++) {
+            Appointment app = appointments.obtener(i);
+            AppointmentWithDetailsDto detailed = getAppointmentWithDetails(app.getId());
+            if (detailed != null) {
+                detailedAppointments.agregar(detailed);
+            }
+        }
+
+        return detailedAppointments;
+    }
+
+    public ListaEsp<AppointmentWithDetailsDto> getAppointmentsByDoctorIdAndDate(int doctorId, String date) {
+        AppointmentDaoPostgres dao = (AppointmentDaoPostgres) appointmentFactoryDao.getDao("postgres");
+        ListaEsp<Appointment> appointments = dao.getByDoctorIdAndDate(doctorId, date);
+        ListaEsp<AppointmentWithDetailsDto> detailedAppointments = new ListaEsp<>();
+
+        for (int i = 0; i < appointments.numElementos(); i++) {
+            Appointment app = appointments.obtener(i);
+            AppointmentWithDetailsDto detailed = getAppointmentWithDetails(app.getId());
+            if (detailed != null) {
+                detailedAppointments.agregar(detailed);
+            }
+        }
+
+        return detailedAppointments;
+    }
+
     public ListaEsp<AppointmentType> getAllAppointmentTypes() {
         return appointmentTypeDao.getAll();
     }

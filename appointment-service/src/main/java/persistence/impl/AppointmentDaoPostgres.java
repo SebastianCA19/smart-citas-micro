@@ -67,7 +67,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
 
     @Override
     public Appointment getById(int id) {
-        String sql = "SELECT * FROM citas WHERE id_cita = ?";
+        String sql = "SELECT * FROM citas WHERE id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -159,7 +159,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
             ps.setInt(2, appointment.getIdPlace());
             ps.setInt(3, appointment.getIdProcedure());
             ps.setInt(4, appointment.getIdDoctor());
-            ps.setInt(5, appointment.getIdNurse());
+            ps.setNull(5, Types.INTEGER);
             ps.setInt(6, appointment.getIdPatient());
             ps.setTimestamp(7, Timestamp.valueOf(appointment.getDate()));  // Changed to Timestamp
 
@@ -226,6 +226,53 @@ public class AppointmentDaoPostgres implements AppointmentDao {
         return appointments;
     }
 
+    public ListaEsp<Appointment> getByDoctorId(int doctorId) {
+        ListaEsp<Appointment> appointments = new ListaEsp<>();
+        String sql = "SELECT * FROM citas WHERE id_medico = ?";
+
+        try(Connection conn = getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+
+            ps.setInt(1, doctorId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Appointment appointment = mapAppointment(rs);
+                appointments.agregar(appointment);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting appointments by doctor id", e);
+        }
+        return appointments;
+    }
+
+    public ListaEsp<Appointment> getByDoctorIdAndDate(int doctorId, String date) {
+        ListaEsp<Appointment> appointments = new ListaEsp<>();
+        String sql = "SELECT * FROM citas WHERE id_medico = ? AND DATE(fecha) = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, doctorId);
+            ps.setInt(1, doctorId);
+            ps.setDate(2, java.sql.Date.valueOf(date)); // "2025-11-24"
+
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Appointment appointment = mapAppointment(rs);
+                appointments.agregar(appointment);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting appointments by doctor id and date", e);
+        }
+
+        return appointments;
+    }
+
+
     public String getAppointmentTypeName(int id) {
         String sql = "SELECT nombre FROM tipo_cita WHERE id = ?";
         try (Connection conn = getConnection();
@@ -273,7 +320,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
 
     private Appointment mapAppointment(ResultSet rs) throws SQLException {
         return new Appointment(
-                rs.getInt("id_cita"),
+                rs.getInt("id"),
                 rs.getInt("id_tipo_cita"),
                 rs.getInt("id_lugar"),
                 rs.getInt("id_enfermero"),
