@@ -3,18 +3,18 @@ package persistence;
 import estructura.ListaEsp;
 import model.Appointment;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;  // Changed import
 
 public interface AppointmentDao {
     ListaEsp<Appointment> getAll();
 
     Appointment getById(int id);
 
-    Appointment getByNameAndDate(String name, LocalDate date);
+    Appointment getByNameAndDate(String name, LocalDateTime date);
 
     void deleteById(int id);
 
-    void deleteByNameAndDate(String name, LocalDate date);
+    void deleteByNameAndDate(String name, LocalDateTime date);
 
     int save(Appointment appointment);
 

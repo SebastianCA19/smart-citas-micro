@@ -15,13 +15,13 @@ import service.AppointmentService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @WebServlet(name = "AppointmentController", urlPatterns = "/api/appointment/*")
 public class AppointmentController extends HttpServlet {
 
     private final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .create();
     private final AppointmentService appointmentService = new AppointmentService();
 
@@ -55,10 +55,6 @@ public class AppointmentController extends HttpServlet {
             String patientIdStr = path.substring(path.indexOf("/patient/") + 9, path.indexOf("/details"));
             int patientId = Integer.parseInt(patientIdStr);
             ListaEsp<AppointmentWithDetailsDto> appointments = appointmentService.getAppointmentsWithDetailsByPatientId(patientId);
-            if(appointments.estaVacia()){
-                resp.setStatus(404);
-                resp.getWriter().println("{\"error\":\"Paciente sin citas\"}");
-            }
             resp.getWriter().println(gson.toJson(appointments));
         }
         // GET /api/appointment/{id}/details - Get appointment by ID with details

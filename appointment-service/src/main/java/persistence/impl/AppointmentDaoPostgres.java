@@ -6,16 +6,14 @@ import model.Appointment;
 import persistence.AppointmentDao;
 
 import java.sql.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class AppointmentDaoPostgres implements AppointmentDao {
 
     private static final Dotenv dotenv = Dotenv.load();
-
     private static final String URL = dotenv.get("DATABASE_URL");
     private static final String USERNAME = dotenv.get("USER");
     private static final String PASSWORD = dotenv.get("PASSWORD");
-
     private Connection connection;
 
     public AppointmentDaoPostgres() {
@@ -75,7 +73,6 @@ public class AppointmentDaoPostgres implements AppointmentDao {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -90,16 +87,16 @@ public class AppointmentDaoPostgres implements AppointmentDao {
     }
 
     @Override
-    public Appointment getByNameAndDate(String name, LocalDate date) {
+    public Appointment getByNameAndDate(String name, LocalDateTime date) {
         String sql = "SELECT c.* FROM citas c " +
-                "INNER JOIN usuarios u ON c.id_paciente = u.id_usuario " +
+                "INNER JOIN usuarios u ON c.id_paciente = u.cedula " +
                 "WHERE u.nombre = ? AND c.fecha = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, name);
-            ps.setDate(2, Date.valueOf(date));
+            ps.setTimestamp(2, Timestamp.valueOf(date));  // Changed to Timestamp
 
             ResultSet rs = ps.executeQuery();
 
@@ -130,17 +127,17 @@ public class AppointmentDaoPostgres implements AppointmentDao {
     }
 
     @Override
-    public void deleteByNameAndDate(String name, LocalDate date) {
+    public void deleteByNameAndDate(String name, LocalDateTime date) {
         String sql = "DELETE FROM citas WHERE id_cita IN " +
                 "(SELECT c.id_cita FROM citas c " +
-                "INNER JOIN usuarios u ON c.id_paciente = u.id_usuario " +
+                "INNER JOIN usuarios u ON c.id_paciente = u.cedula " +
                 "WHERE u.nombre = ? AND c.fecha = ?)";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, name);
-            ps.setDate(2, Date.valueOf(date));
+            ps.setTimestamp(2, Timestamp.valueOf(date));  // Changed to Timestamp
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -164,7 +161,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
             ps.setInt(4, appointment.getIdDoctor());
             ps.setInt(5, appointment.getIdNurse());
             ps.setInt(6, appointment.getIdPatient());
-            ps.setDate(7, Date.valueOf(appointment.getDate()));
+            ps.setTimestamp(7, Timestamp.valueOf(appointment.getDate()));  // Changed to Timestamp
 
             int rows = ps.executeUpdate();
 
@@ -197,7 +194,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
             ps.setInt(4, appointment.getIdDoctor());
             ps.setInt(5, appointment.getIdNurse());
             ps.setInt(6, appointment.getIdPatient());
-            ps.setDate(7, Date.valueOf(appointment.getDate()));
+            ps.setTimestamp(7, Timestamp.valueOf(appointment.getDate()));  // Changed to Timestamp
             ps.setInt(8, appointment.getId());
 
             return ps.executeUpdate();
@@ -205,6 +202,28 @@ public class AppointmentDaoPostgres implements AppointmentDao {
         } catch (SQLException e) {
             throw new RuntimeException("Error updating appointment", e);
         }
+    }
+
+    public ListaEsp<Appointment> getByPatientId(int patientId) {
+        ListaEsp<Appointment> appointments = new ListaEsp<>();
+        String sql = "SELECT * FROM citas WHERE id_paciente = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, patientId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Appointment appointment = mapAppointment(rs);
+                appointments.agregar(appointment);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error getting appointments by patient id", e);
+        }
+
+        return appointments;
     }
 
     public String getAppointmentTypeName(int id) {
@@ -252,29 +271,6 @@ public class AppointmentDaoPostgres implements AppointmentDao {
         return null;
     }
 
-    public ListaEsp<Appointment> getByPatientId(int patientId) {
-        ListaEsp<Appointment> appointments = new ListaEsp<>();
-        String sql = "SELECT * FROM citas WHERE id_paciente = ?";
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, patientId);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                Appointment appointment = mapAppointment(rs);
-                appointments.agregar(appointment);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error getting appointments by patient id", e);
-        }
-
-        return appointments;
-    }
-
     private Appointment mapAppointment(ResultSet rs) throws SQLException {
         return new Appointment(
                 rs.getInt("id_cita"),
@@ -284,7 +280,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
                 rs.getInt("id_procedimiento"),
                 rs.getInt("id_medico"),
                 rs.getInt("id_paciente"),
-                rs.getDate("fecha").toLocalDate()
+                rs.getTimestamp("fecha").toLocalDateTime()
         );
     }
 }

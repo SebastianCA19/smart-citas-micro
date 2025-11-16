@@ -1,9 +1,8 @@
 package model;
 
-import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public class Appointment implements Cloneable{
+public class Appointment implements Cloneable {
     private Integer id;
     private Integer idAppointmentType;
     private Integer idPlace;
@@ -11,10 +10,11 @@ public class Appointment implements Cloneable{
     private Integer idDoctor;
     private Integer idNurse;
     private Integer idPatient;
-    private LocalDate date;
+    private LocalDateTime fecha;
 
     public Appointment(
-            Integer id, Integer idAppointmentType, Integer idPlace, Integer idNurse, Integer idProcedure, Integer idDoctor, Integer idPatient, LocalDate date
+            Integer id, Integer idAppointmentType, Integer idPlace, Integer idNurse,
+            Integer idProcedure, Integer idDoctor, Integer idPatient, LocalDateTime fecha
     ) {
         this.id = id;
         this.idAppointmentType = idAppointmentType;
@@ -23,7 +23,7 @@ public class Appointment implements Cloneable{
         this.idDoctor = idDoctor;
         this.idNurse = idNurse;
         this.idPatient = idPatient;
-        this.date = date;
+        this.fecha = fecha;
     }
 
     @Override
@@ -33,7 +33,10 @@ public class Appointment implements Cloneable{
 
     @Override
     public String toString() {
-        return "Cita{" + "id=" + id + ", idTipoCita=" + idAppointmentType + ", idLugar=" + idPlace + ", idProcedimiento=" + idProcedure + ", idMedico=" + idDoctor + ", idPaciente=" + idPatient + ", idEnfermero=" + idNurse + ", fecha=" + date + '}';
+        return "Cita{" + "id=" + id + ", idTipoCita=" + idAppointmentType +
+                ", idLugar=" + idPlace + ", idProcedimiento=" + idProcedure +
+                ", idMedico=" + idDoctor + ", idPaciente=" + idPatient +
+                ", idEnfermero=" + idNurse + ", fecha=" + fecha + '}';
     }
 
     public Integer getIdAppointmentType() {
@@ -92,11 +95,20 @@ public class Appointment implements Cloneable{
         this.idPatient = idPatient;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDateTime getFecha() {  // Changed return type
+        return fecha;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setFecha(LocalDateTime fecha) {  // Changed parameter type
+        this.fecha = fecha;
+    }
+
+    // Backward compatibility - keep old method names but delegate to fecha
+    public LocalDateTime getDate() {
+        return fecha;
+    }
+
+    public void setDate(LocalDateTime fecha) {
+        this.fecha = fecha;
     }
 }

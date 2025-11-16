@@ -1,6 +1,6 @@
 package presentation.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record AppointmentWithDetailsDto(
         Integer id,
@@ -14,5 +14,5 @@ public record AppointmentWithDetailsDto(
         String doctorName,
         Integer idNurse,
         Integer idPatient,
-        LocalDate date
+        LocalDateTime date
 ) {}
