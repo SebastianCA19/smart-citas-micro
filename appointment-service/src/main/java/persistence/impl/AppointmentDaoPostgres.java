@@ -113,7 +113,7 @@ public class AppointmentDaoPostgres implements AppointmentDao {
 
     @Override
     public void deleteById(int id) {
-        String sql = "DELETE FROM citas WHERE id_cita = ?";
+        String sql = "DELETE FROM citas WHERE id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
