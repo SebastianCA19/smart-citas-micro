@@ -25,4 +25,6 @@ public interface MedicalRecordService {
     ListaEsp<MedicalRecordWithDetailsDTO> getByPatientIdWithDetails(int idPatient);
 
     ListaEsp<MedicalRecordWithDetailsDTO> getByDoctorIdWithDetails(int idDoctor);
+
+    ListaEsp<MedicalRecordWithDetailsDTO> getByAppointmentId(int id);
 }

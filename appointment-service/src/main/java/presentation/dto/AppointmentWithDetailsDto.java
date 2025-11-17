@@ -14,5 +14,6 @@ public record AppointmentWithDetailsDto(
         String doctorName,
         Integer idNurse,
         Integer idPatient,
+        String patientName,
         LocalDateTime date
 ) {}

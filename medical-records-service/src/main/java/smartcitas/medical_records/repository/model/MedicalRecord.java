@@ -2,6 +2,7 @@ package smartcitas.medical_records.repository.model;
 
 public class MedicalRecord {
     private int idRecord;
+    private int idAppointment;
     private int idPatient;
     private int idDoctor;
     private String diagnosis;
@@ -11,9 +12,10 @@ public class MedicalRecord {
     public MedicalRecord() {
     }
 
-    public MedicalRecord(int idRecord, int idPatient, int idDoctor, String diagnosis, String treatment, String notes) {
+    public MedicalRecord(int idRecord, int idPatient, int idAppointment, int idDoctor, String diagnosis, String treatment, String notes) {
         this.idRecord = idRecord;
         this.idPatient = idPatient;
+        this.idAppointment = idAppointment;
         this.idDoctor = idDoctor;
         this.diagnosis = diagnosis;
         this.treatment = treatment;
@@ -26,6 +28,13 @@ public class MedicalRecord {
 
     public void setIdRecord(int idRecord) {
         this.idRecord = idRecord;
+    }
+
+    public int getIdAppointment() {
+        return idAppointment;
+    }
+    public void setIdAppointment(int idAppointment) {
+        this.idAppointment = idAppointment;
     }
 
     public int getIdPatient() {

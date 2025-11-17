@@ -1,22 +1,20 @@
 package service;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class DoctorServiceClient {
+public class UserServiceClient {
 
     private static final String USER_SERVICE_URL = "http://localhost:8081";
     private final Gson gson = new Gson();
 
-    public String getDoctorFullName(int doctorId) {
+    public String getUserFullName(int id) {
         try {
-            URL url = new URL(USER_SERVICE_URL + "/api/doctors/" +  doctorId);
+            URL url = new URL(USER_SERVICE_URL + "/api/doctors/" +  id);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json");

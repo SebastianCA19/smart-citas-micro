@@ -1,6 +1,7 @@
 package smartcitas.medical_records.repository.dao;
 
 import estructura.ListaEsp;
+import smartcitas.medical_records.dto.MedicalRecordWithDetailsDTO;
 import smartcitas.medical_records.repository.model.MedicalRecord;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface MedicalRecordDao {
     ListaEsp<MedicalRecord> findAll();
     ListaEsp<MedicalRecord> findByDoctorId(int idDoctor);
     ListaEsp<MedicalRecord> findByPatientId(int idPatient);
+
+    ListaEsp<MedicalRecord> findByAppointmentId(int id);
 }

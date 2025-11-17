@@ -10,7 +10,7 @@ import presentation.dto.AppointmentWithDetailsDto;
 public class AppointmentService {
 
     private final AppointmentFactoryDao appointmentFactoryDao = AppointmentFactoryDao.getInstance();
-    private final DoctorServiceClient doctorServiceClient = new DoctorServiceClient();
+    private final UserServiceClient userServiceClient = new UserServiceClient();
     private final AppointmentTypeDaoPostgres appointmentTypeDao = new AppointmentTypeDaoPostgres();
     private final ProcedureDaoPostgres procedureDao = new ProcedureDaoPostgres();
     private final PlaceDaoPostgres placeDao = new PlaceDaoPostgres();
@@ -104,7 +104,8 @@ public class AppointmentService {
 
         if (appointment != null) {
             // Get names from database and external service
-            String doctorName = doctorServiceClient.getDoctorFullName(appointment.getIdDoctor());
+            String doctorName = userServiceClient.getUserFullName(appointment.getIdDoctor());
+            String patientName = userServiceClient.getUserFullName(appointment.getIdPatient());
             String appointmentTypeName = dao.getAppointmentTypeName(appointment.getIdAppointmentType());
             String procedureName = dao.getProcedureName(appointment.getIdProcedure());
             String placeName = dao.getPlaceName(appointment.getIdPlace());
@@ -121,6 +122,7 @@ public class AppointmentService {
                     doctorName,
                     appointment.getIdNurse(),
                     appointment.getIdPatient(),
+                    patientName,
                     appointment.getDate()
             );
         }

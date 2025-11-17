@@ -8,7 +8,7 @@ import java.sql.*;
 public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
     public int insert(MedicalRecord medicalRecord) {
-        String sql = "INSERT INTO historias_clinicas (id_paciente, id_doctor, diagnostico, tratamiento, notas) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO historias_clinicas (id_cita, id_medico, diagnostico, tratamiento, notas, id_paciente) VALUES (?, ?, ?, ?, ?, ?)";
 
         int id = 0;
 
@@ -20,6 +20,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
             ps.setString(3, medicalRecord.getDiagnosis());
             ps.setString(4, medicalRecord.getTreatment());
             ps.setString(5, medicalRecord.getNotes());
+            ps.setInt(6, medicalRecord.getIdAppointment());
 
             int rows = ps.executeUpdate();
 
@@ -39,7 +40,7 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
 
     @Override
     public int update(MedicalRecord medicalRecord) {
-        String sql = "UPDATE historias_clinicas SET id_paciente=?, id_doctor=?, diagnostico=?, tratamiento=?, notas=? WHERE id_historia=?";
+        String sql = "UPDATE historias_clinicas SET id_paciente=?, id_medico=?, diagnostico=?, tratamiento=?, notas=? WHERE id_historia=?";
 
         try (Connection connection = DBConnection.getInstance().getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -100,9 +101,14 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
     @Override
     public ListaEsp<MedicalRecord> findByDoctorId(int idDoctor) {
         ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
-        String sql = "SELECT * FROM historias_clinicas WHERE id_doctor = ? ORDER BY id_historia DESC";
+        String sql = "SELECT * FROM historias_clinicas WHERE id_medico = ? ORDER BY id_historia DESC";
 
-        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql); ResultSet resultSet = preparedStatement.executeQuery()){
+        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+
+            preparedStatement.setInt(1, idDoctor);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
             while(resultSet.next()){
                 MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
                 medicalRecords.agregar(medicalRecord);
@@ -119,7 +125,11 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
         ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
         String sql = "SELECT * FROM historias_clinicas WHERE id_paciente = ? ORDER BY id_historia DESC";
 
-        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql); ResultSet resultSet = preparedStatement.executeQuery()){
+        try(Connection connection = DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+
+            preparedStatement.setInt(1, idPatient);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
                 MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
                 medicalRecords.agregar(medicalRecord);
@@ -131,14 +141,37 @@ public class MedicalRecordDaoPostgres implements  MedicalRecordDao {
         return medicalRecords;
     }
 
+    public ListaEsp<MedicalRecord> findByAppointmentId(int idAppointment) {
+        ListaEsp<MedicalRecord> medicalRecords = new ListaEsp<>();
+        String sql = "SELECT * FROM historias_clinicas WHERE id_cita= ? ORDER BY id_historia DESC";
+
+        try (Connection conn =  DBConnection.getInstance().getConnection(); PreparedStatement preparedStatement = conn.prepareStatement(sql)){
+
+            preparedStatement.setInt(1, idAppointment);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                MedicalRecord medicalRecord = mapMedicalRecord(resultSet);
+                medicalRecords.agregar(medicalRecord);
+            }
+
+        } catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+
+        return medicalRecords;
+    }
+
     private MedicalRecord mapMedicalRecord(ResultSet rs) throws SQLException {
         MedicalRecord mr = new MedicalRecord();
-        mr.setIdRecord(rs.getInt("id_record"));
-        mr.setIdPatient(rs.getInt("id_patient"));
-        mr.setIdDoctor(rs.getInt("id_doctor"));
-        mr.setDiagnosis(rs.getString("diagnosis"));
-        mr.setTreatment(rs.getString("treatment"));
-        mr.setNotes(rs.getString("notes"));
+        mr.setIdRecord(rs.getInt("id_historia"));
+        mr.setIdAppointment(rs.getInt("id_cita"));
+        mr.setIdPatient(rs.getInt("id_paciente"));
+        mr.setIdDoctor(rs.getInt("id_medico"));
+        mr.setDiagnosis(rs.getString("diagnostico"));
+        mr.setTreatment(rs.getString("tratamiento"));
+        mr.setNotes(rs.getString("notas"));
         return mr;
     }
 }

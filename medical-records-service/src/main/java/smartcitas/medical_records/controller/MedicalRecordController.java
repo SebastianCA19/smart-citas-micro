@@ -42,6 +42,15 @@ public class MedicalRecordController extends HttpServlet {
             ListaEsp<MedicalRecordWithDetailsDTO> records = medicalRecordService.getAllWithDetails();
             resp.getWriter().println(gson.toJson(toList(records)));
         }
+
+        // GET /api/medicalrecords/appointment/{id}/details - Get appointment record
+        else if (path != null && path.contains("/appointment/") && path.endsWith("/details")){
+            String idAppo = path.substring(path.indexOf("/appointment/") + 13, path.indexOf("/details"));
+            int id = Integer.parseInt(idAppo);
+            ListaEsp<MedicalRecordWithDetailsDTO> record = medicalRecordService.getByAppointmentId(id);
+            resp.getWriter().println(gson.toJson(toList(record)));
+        }
+
         // GET /api/medicalrecords/patient/{cedula}/details - Get patient records with details
         else if (path != null && path.contains("/patient/") && path.endsWith("/details")) {
             String cedulaStr = path.substring(path.indexOf("/patient/") + 9, path.indexOf("/details"));
@@ -107,6 +116,8 @@ public class MedicalRecordController extends HttpServlet {
         CreateMedicalRecordDTO createDTO = gson.fromJson(
                 new BufferedReader(new InputStreamReader(req.getInputStream())),
                 CreateMedicalRecordDTO.class);
+
+        System.out.println("Dto: " + createDTO);
 
         int id = medicalRecordService.create(createDTO);
 

@@ -16,6 +16,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     public int create(CreateMedicalRecordDTO createMedicalRecordDTO) {
         MedicalRecord medicalRecord = new MedicalRecord(
                 0,
+                createMedicalRecordDTO.idAppointment(),
                 createMedicalRecordDTO.idPatient(),
                 createMedicalRecordDTO.idDoctor(),
                 createMedicalRecordDTO.diagnosis(),
@@ -126,6 +127,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
             return new MedicalRecordWithDetailsDTO(
                     medicalRecord.getIdRecord(),
+                    medicalRecord.getIdAppointment(),
                     medicalRecord.getIdPatient(),
                     patientName,
                     medicalRecord.getIdDoctor(),
@@ -150,6 +152,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
             MedicalRecordWithDetailsDTO detailDTO = new MedicalRecordWithDetailsDTO(
                     mr.getIdRecord(),
+                    mr.getIdAppointment(),
                     mr.getIdPatient(),
                     patientName,
                     mr.getIdDoctor(),
@@ -175,6 +178,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
             MedicalRecordWithDetailsDTO detailDTO = new MedicalRecordWithDetailsDTO(
                     mr.getIdRecord(),
+                    mr.getIdAppointment(),
                     mr.getIdPatient(),
                     patientName,
                     mr.getIdDoctor(),
@@ -200,6 +204,33 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
             MedicalRecordWithDetailsDTO detailDTO = new MedicalRecordWithDetailsDTO(
                     mr.getIdRecord(),
+                    mr.getIdPatient(),
+                    mr.getIdAppointment(),
+                    patientName,
+                    mr.getIdDoctor(),
+                    doctorName,
+                    mr.getDiagnosis(),
+                    mr.getTreatment(),
+                    mr.getNotes()
+            );
+            detailedRecords.agregar(detailDTO);
+        }
+        return detailedRecords;
+    }
+
+    @Override
+    public ListaEsp<MedicalRecordWithDetailsDTO> getByAppointmentId(int id) {
+        ListaEsp<MedicalRecord> medicalRecords = dao.findByAppointmentId(id);
+        ListaEsp<MedicalRecordWithDetailsDTO> detailedRecords = new ListaEsp<>();
+
+        for (int i = 0; i < medicalRecords.numElementos(); i++) {
+            MedicalRecord mr = medicalRecords.obtener(i);
+            String patientName = userServiceClient.getUserFullName(mr.getIdPatient());
+            String doctorName = userServiceClient.getUserFullName(mr.getIdDoctor());
+
+            MedicalRecordWithDetailsDTO detailDTO = new MedicalRecordWithDetailsDTO(
+                    mr.getIdRecord(),
+                    mr.getIdAppointment(),
                     mr.getIdPatient(),
                     patientName,
                     mr.getIdDoctor(),

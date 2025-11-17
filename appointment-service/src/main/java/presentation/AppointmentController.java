@@ -70,7 +70,7 @@ public class AppointmentController extends HttpServlet {
             resp.getWriter().println(gson.toJson(toList(appointments)));
         }
         // GET /api/appointment/doctor/{cedula}/details  (sin fecha)
-// GET /api/appointment/doctor/{cedula}/details?date=YYYY-MM-DD  (con fecha)
+        // GET /api/appointment/doctor/{cedula}/details?date=YYYY-MM-DD  (con fecha)
         else if (path != null && path.contains("/doctor/") && path.endsWith("/details")) {
 
             // Extraer cédula
