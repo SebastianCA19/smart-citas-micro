@@ -35,6 +35,7 @@ public class MedicalRecordController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         String path = req.getPathInfo();
 
         // GET /api/medicalrecords/details - Get all records with details
@@ -112,6 +113,7 @@ public class MedicalRecordController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
 
         CreateMedicalRecordDTO createDTO = gson.fromJson(
                 new BufferedReader(new InputStreamReader(req.getInputStream())),
@@ -132,6 +134,7 @@ public class MedicalRecordController extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
         String path = req.getPathInfo();
 
         if (path == null || path.equals("/")) {
