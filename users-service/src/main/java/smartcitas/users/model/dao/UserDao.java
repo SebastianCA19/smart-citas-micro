@@ -13,4 +13,5 @@ public interface UserDao{
     User login(String email, String password);
     List<User> getUsersByType(String tableName);
     void linkUserToType(int userId, String tableName);
+    String getType();
 }

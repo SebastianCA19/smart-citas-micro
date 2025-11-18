@@ -165,6 +165,11 @@ public class UserDaoPostgres implements UserDao {
         }
     }
 
+    @Override
+    public String getType() {
+        return "postgres";
+    }
+
     private User mapUser(ResultSet rs) throws SQLException {
         User u = new User();
         u.setCedula(rs.getInt("cedula"));

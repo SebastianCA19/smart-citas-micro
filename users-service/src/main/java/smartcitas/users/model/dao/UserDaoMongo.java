@@ -1,10 +1,15 @@
 package smartcitas.users.model.dao;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import smartcitas.users.model.User;
 
 import java.util.ArrayList;
@@ -17,7 +22,7 @@ import static com.mongodb.client.model.Filters.*;
 public class UserDaoMongo implements UserDao{
 
     DBConnectionMongo dbConn = new DBConnectionMongo();
-    MongoDatabase db = dbConn.getMc().getDatabase("smartcitas");
+    MongoDatabase db = dbConn.getMc().getDatabase("smart-citas");
     MongoCollection<Document> users = db.getCollection("users");
 
     @Override
@@ -45,8 +50,15 @@ public class UserDaoMongo implements UserDao{
 
     @Override
     public int insert(User user) {
-        users.insertOne(mapUserToDoc(user));
-        return 0;
+        InsertOneResult result = users.insertOne(mapUserToDoc(user));
+
+        // Obtener el _id generado
+        ObjectId id = result.getInsertedId().asObjectId().getValue();
+
+        // Leer el documento recién insertado
+        Document inserted = users.find(Filters.eq("_id", id)).first();
+
+        return inserted.getInteger("cedula");
     }
 
     @Override
@@ -90,6 +102,11 @@ public class UserDaoMongo implements UserDao{
        users.updateOne(eq("cedula", userId), new Document("$set", new Document("type", tableName)));
     }
 
+    @Override
+    public String getType() {
+        return "mongo";
+    }
+
     public User mapDocToUser(Document doc){
         User userOut = new User();
         userOut.setCedula(doc.getInteger("cedula"));
@@ -98,7 +115,7 @@ public class UserDaoMongo implements UserDao{
         userOut.setSegundoApellido(doc.getString("segundoApellido"));
         userOut.setEmail(doc.getString("email"));
         userOut.setClave(doc.getString("clave"));
-        userOut.setEstado(doc.getInteger("estado"));
+        userOut.setEstado(1);
         return userOut;
     }
 
