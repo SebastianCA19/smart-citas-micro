@@ -19,15 +19,8 @@ public class UserController extends HttpServlet {
 
     private final Gson gson = new Gson();
     private final DAOFactory fac = DAOFactory.getFactory();
-    private final UserDao userDao = fac.getUserDao("mongo");
+    private final UserDao userDao = fac.getUserDao("postgres");
 
-    public void setMongo(){
-        String type = userDao.getType();
-
-        if(type.equals("mongo")){
-
-        }
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

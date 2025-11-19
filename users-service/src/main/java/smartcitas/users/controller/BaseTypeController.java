@@ -10,7 +10,7 @@ import smartcitas.users.model.dao.UserDao;
 
 public abstract class BaseTypeController extends HttpServlet {
     protected final DAOFactory fac =  DAOFactory.getFactory();
-    protected final UserDao userDao = fac.getUserDao("mongo");
+    protected final UserDao userDao = fac.getUserDao("postgres");
     protected final Gson gson = new Gson();
 
     protected abstract String getTableName();
